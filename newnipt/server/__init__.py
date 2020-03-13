@@ -2,13 +2,11 @@
 import os
 import logging
 
-from flask import Flask, Blueprint
+from flask import Flask
 from pymongo import MongoClient
 
 from newnipt.adapter.plugin import NiptAdapter
-#from newnipt.server.views import blueprint
-
-blueprint = Blueprint('server', __name__ )
+from newnipt.server.views import blueprint
 
 
 logging.basicConfig(level=logging.INFO)
@@ -32,3 +30,4 @@ def create_app(test = False):
             toolbar = DebugToolbarExtension(app)
 
     return app
+
