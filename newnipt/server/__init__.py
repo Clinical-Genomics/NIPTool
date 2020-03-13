@@ -2,11 +2,14 @@
 import os
 import logging
 
-from flask import Flask
+from flask import Flask, Blueprint
 from pymongo import MongoClient
 
 from newnipt.adapter.plugin import NiptAdapter
-from newnipt.server.views import blueprint
+#from newnipt.server.views import blueprint
+
+blueprint = Blueprint('server', __name__ )
+
 
 logging.basicConfig(level=logging.INFO)
 LOG = logging.getLogger(__name__)
