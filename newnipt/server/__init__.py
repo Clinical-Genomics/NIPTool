@@ -8,6 +8,7 @@ from pymongo import MongoClient
 from newnipt.adapter.plugin import NiptAdapter
 from newnipt.server.views import blueprint
 
+
 logging.basicConfig(level=logging.INFO)
 LOG = logging.getLogger(__name__)
 
