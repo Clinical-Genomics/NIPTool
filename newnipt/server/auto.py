@@ -11,10 +11,7 @@ from flask_login import LoginManager
 
 
 from flask_oauthlib.client import OAuth
-#from .auto import app
-#import ssl
 
-#ctx = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
 
 mail = Mail(app)
 login_manager = LoginManager(app)

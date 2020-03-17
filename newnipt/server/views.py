@@ -2,10 +2,12 @@
 
 from flask import url_for, redirect, render_template, request, Blueprint, current_app
 from flask_login import login_user,logout_user, current_user, login_required
-from .auto import app #login_manager, google, app, mail
-from . import blueprint
+#from .auto import app #login_manager, google, app, mail
+#from . import blueprint
 
 app = current_app
+blueprint = Blueprint('server', __name__ )
+
 
 @blueprint.route('/', methods=['GET', 'POST'])
 def index():
@@ -15,7 +17,9 @@ def index():
 
 @blueprint.route('/login/')
 def login():
+    print('koko')
     callback_url = url_for('authorized', _external=True)
+    print('hoj')
     return google.authorize(callback=callback_url)
 
 
@@ -41,22 +45,24 @@ def authorized(oauth_response):
     google_data = google_user.data
 
     # match email against whitelist before completing sign up
-    try:   
-        user_obj =  User.query.filter_by(email = google_data['email']).first()
-    except:
-        user_obj = None
-    if user_obj:
-        try:
-            if login_user(user_obj):
-                return redirect(request.args.get('next') or url_for('batch'))
-        except:
-            flash('Sorry, you could not log in', 'warning')
-    else:
-        flash('Your email is not on the whitelist, contact an admin.')
-        return redirect(url_for('index'))
-    if login_user(user_obj):
-        return redirect(request.args.get('next') or url_for('batch'))
-    return redirect(url_for('index'))
+    #try:   
+    #    user_obj =  User.query.filter_by(email = google_data['email']).first()
+    #except:
+    #    user_obj = None
+    #if user_obj:
+    #    try:
+    #        if login_user(user_obj):
+    #            return redirect(request.args.get('next') or url_for('batch'))
+     #   except:
+      #      flash('Sorry, you could not log in', 'warning')
+    #else:
+     #   flash('Your email is not on the whitelist, contact an admin.')
+      #  return redirect(url_for('index'))
+    
+    #if login_user(user_obj):
+    print('kjhlkjhlkjhk')
+    return redirect(url_for('batch'))
+    #return redirect(url_for('index'))
 
 
 @blueprint.route('/NIPT/')
