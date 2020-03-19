@@ -1,3 +1,10 @@
+from flask import url_for, redirect, render_template, request, Blueprint, current_app
+
+from werkzeug.contrib.fixers import ProxyFix
+
+from flask_login import LoginManager
+from flask_mail import Mail
+from flask_oauthlib.client import OAuth
 
 import os
 import logging
@@ -6,7 +13,8 @@ from flask import Flask
 from pymongo import MongoClient
 
 from newnipt.adapter.plugin import NiptAdapter
-from newnipt.server.views import blueprint
+
+blueprint = Blueprint('server', __name__ )
 
 logging.basicConfig(level=logging.INFO)
 LOG = logging.getLogger(__name__)
@@ -29,3 +37,17 @@ def create_app(test = False):
             toolbar = DebugToolbarExtension(app)
 
     return app
+
+app = create_app()
+
+app.wsgi_app = ProxyFix(app.wsgi_app)
+
+
+
+mail = Mail(app)
+login_manager = LoginManager(app)
+oauth = OAuth(app)
+google = oauth.remote_app('google', app_key='GOOGLE')
+login_manager.login_view = 'login'
+login_manager.login_message = 'Please log in to access this page.'
+login_manager.refresh_view = 'reauth'
