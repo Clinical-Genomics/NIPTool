@@ -14,7 +14,7 @@ from flask_login import login_required
 from datetime import datetime
 from NIPTool.server.utils import *
 from NIPTool.server.constants import *
-from flask_weasyprint import HTML, render_pdf
+import pdfkit
 
 
 app = current_app
@@ -188,10 +188,10 @@ def report(batch_id, coverage):
         page_id="batches",
 
     )
-    return render_pdf(
-        HTML(string=report_html),
-        download_filename='report.pdf',
-    )
+    upp=pdfkit.from_string(report_html,'SOF.pdf')
+    print(upp)
+    return report_html
+
 
 
 
