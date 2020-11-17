@@ -1,0 +1,57 @@
+{% extends 'layout/report_layout.html' %}
+
+
+{% block body %}
+
+<div class="card mb-3" style="border-width: 5px;">
+                <h2 class="page-header"><strong>NIPT Results </strong><br><small>Batch:
+                        {{batch._id}}</small><small>
+                        <p align="right" id="demo"></p>
+                    </small></h2>
+                    <table id="batch_table" class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Sample Name</th>
+                                <th>NCV13</th>
+                                <th>NCV18</th>
+                                <th>NCV21</th>
+                                <th>NCVX</th>
+                                <th>FF(%)</th>
+                                <th>FFX(%)</th>
+                                <th>FFY(%)</th>
+                                <th>CNVSegment</th>
+                                <th>Warning</th>
+                                <th>Status</th>
+                                <th>Comment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sample in sample_info %}
+                            <tr>
+                                <td >{{ sample.sample_id }}</td>
+                                <td  >{{ sample.Zscore_13.value }}</td>
+                                <td >{{ sample.Zscore_18.value }}</td>
+                                <td >{{ sample.Zscore_21.value }}</td>
+                                <td >{{ sample.Zscore_X.value }}</td>
+                                <td >{{sample.FF.value}}</td>
+                                <td >{{sample.FFX.value}}</td>
+                                <td  >{{sample.FFY.value}}</td>
+                                <td >{{sample.CNVSegment.value}}</td>
+                                <td>{{ sample.Status }}</td>
+                                <td >{{sample.Comment}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div id="cov_plot" style="min-width:400px; height:800px; "></div>
+                </div>
+
+
+{% endblock %}
+{% block scripts %}
+{% include 'batch/plots/NCV.html' %}
+{% include 'batch/plots/FF_XY.html' %}
+{% include 'batch/plots/FF.html' %}
+{% include 'batch/plots/coverage.html' %}
+
+{% endblock %}

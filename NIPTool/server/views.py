@@ -14,6 +14,8 @@ from flask_login import login_required
 from datetime import datetime
 from NIPTool.server.utils import *
 from NIPTool.server.constants import *
+from flask_weasyprint import HTML, render_pdf
+
 
 app = current_app
 server_bp = Blueprint("server", __name__)
@@ -159,8 +161,9 @@ def report(batch_id, coverage):
     scatter_data = get_scatter_data_for_coverage_plot(samples)
     box_data = get_box_data_for_coverage_plot(samples)
     control = get_ff_control_normal(app.adapter)
-    return render_template(
-        "batch/report.html",
+
+    report_html = render_template(
+        "batch/report_to_pdf.html",
         batch=batch,
         # NCV
         ncv_chrom_data={
@@ -183,7 +186,13 @@ def report(batch_id, coverage):
         scatter_data=scatter_data,
         box_data=box_data,
         page_id="batches",
+
     )
+    return render_pdf(
+        HTML(string=report_html),
+        download_filename='report.pdf',
+    )
+
 
 
 ### Sample Views
