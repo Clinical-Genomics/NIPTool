@@ -21,7 +21,8 @@ def test_parse_batch_file_with_missing_data(invalid_csv):
 
     # THEN assert results is a list and it has length 3
     assert isinstance(results, list)
-    assert len(results)==3
+    for sample in results:
+        assert sample == {}
 
 
 def test_parse_batch_file_with_missing_file():	

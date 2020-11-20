@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 
 from flask import (
+    send_from_directory,
     url_for,
     redirect,
     render_template,
     request,
     Blueprint,
     current_app,
-    session,
-    flash,
-)
+    session)
+from pathlib import Path
+
+
 from flask_login import login_required
 from datetime import datetime
 from NIPTool.server.utils import *
@@ -234,6 +236,21 @@ def sample_tris(sample_id):
         status_colors=STATUS_COLORS,
         page_id="sample_tris",
     )
+
+import tempfile
+
+@server_bp.route("/download/<batch_id>/<file_id>")
+@login_required
+def download(batch_id, file_id):
+    """View for downloads"""
+    batch = app.adapter.batch(batch_id)
+    file = Path(batch[file_id])
+    if not file.exists():
+        # warn
+        return redirect(request.referrer)
+
+    return send_from_directory(str(file.parent), file.name, as_attachment=True)
+
 
 
 # Statistics
