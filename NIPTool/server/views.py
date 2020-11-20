@@ -184,6 +184,7 @@ def report(batch_id, coverage):
         # table
         sample_info=[get_sample_info(sample) for sample in samples],
         # coverage
+        coverage = coverage,
         x_axis=list(range(1, 23)),
         scatter_data=scatter_data,
         box_data=box_data,
