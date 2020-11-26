@@ -4,12 +4,11 @@ This change log will document the notable changes to this project in this file a
 
 ## [x.x.x]
 ### Added
-- Sample views 
+- Sample views
 - Batch views
+- Dockerfile
 
 ### Fixed
 
 ### Changed
 - Changed name of package to NIPTool
-
-

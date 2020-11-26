@@ -12,17 +12,17 @@ def get_sample_info(sample):
     sample_info_keys = ["Zscore_13", "Zscore_18", "Zscore_21", "CNVSegment", "FF_Formatted", "FFX", "FFY", "Zscore_X"]
     for key in sample_info_keys:
         val = sample.get(key)
-        if isinstance(val,(float,int)):
+        if isinstance(val, (float, int)):
             sample[key] = round(val, 2)
         else:
             sample[key] = ""
-        
+
     return {
         "sample_id": sample.get("_id"),
         "FF": {"value": sample.get("FF_Formatted"), "warn": sample_warnings.get("FF_Formatted")},
-        "CNVSegment": {"value": sample.get("CNVSegment"), "warn": "default",},
-        "FFX": {"value": sample.get("FFX"), "warn": "default",},
-        "FFY": {"value": sample.get("FFY"), "warn": "default",},
+        "CNVSegment": {"value": sample.get("CNVSegment"), "warn": "default", },
+        "FFX": {"value": sample.get("FFX"), "warn": "default", },
+        "FFY": {"value": sample.get("FFY"), "warn": "default", },
         "Zscore_13": {"value": sample.get("Zscore_13"), "warn": sample_warnings.get("Zscore_13")},
         "Zscore_18": {"value": sample.get("Zscore_18"), "warn": sample_warnings.get("Zscore_18")},
         "Zscore_21": {"value": sample.get("Zscore_21"), "warn": sample_warnings.get("Zscore_21")},
@@ -47,32 +47,31 @@ def _get_status(sample):
 
 def _get_ff_warning(fetal_fraction):
     """Get fetal fraction warning based on preset treshold"""
-    if fetal_fraction is "":
+    if fetal_fraction == "":
         return "default"
 
-    try:
-        fetal_fraction = fetal_fraction
-    except:
-        fetal_fraction = None
     if fetal_fraction and fetal_fraction <= FF_TRESHOLD:
         return "danger"
     else:
         return "default"
 
+
 def get_sample_warnings(sample):
+    """"""
+
     sample_warnings = {}
     fetal_fraction = sample.get('FF_Formatted')
     sample_warnings["FF_Formatted"] = _get_ff_warning(fetal_fraction)
     for key in ["Zscore_13", "Zscore_18", "Zscore_21"]:
         z_score = sample.get(key)
         sample_warnings[key] = _get_tris_warning(z_score, fetal_fraction)
-    
-    return sample_warnings
 
+    return sample_warnings
 
 
 def _get_tris_warning(z_score: float, fetal_fraction):
     """Get automated trisomi warning, based on preset Zscore thresholds"""
+
     if fetal_fraction is None or z_score is None:
         return "default"
 
@@ -111,6 +110,7 @@ def get_scatter_data_for_coverage_plot(samples):
             data[sample_id]["y"].append(ratio)
             data[sample_id]["x"].append(chr)
     return data
+
 
 def get_box_data_for_coverage_plot(samples):
     """Coverage Ratio data for Coverage Plot."""
@@ -202,8 +202,12 @@ def get_ff_cases(adapter, batch_id):
             }
         },
     ]
-    data = list(adapter.sample_aggregate(pipe))[0]
+    aggregation = list(adapter.sample_aggregate(pipe))
+
     massaged_data = {}
+    if not aggregation:
+        return massaged_data
+    data = aggregation[0]
     for i, sample_id in enumerate(data["names"]):
         massaged_data[sample_id] = {
             "FFY": data["FFY"][i],
@@ -345,14 +349,14 @@ def get_last_batches(adapter, nr: int) -> list:
     batch_sort_aggregation = [{'$sort': {'SequencingDate': -1}}]
     sorted_batches = list(adapter.batch_aggregate(batch_sort_aggregation))
     if len(sorted_batches) > nr:
-        sorted_batches = sorted_batches[0:nr] 
+        sorted_batches = sorted_batches[0:nr]
 
-    return(sorted_batches)
+    return (sorted_batches)
 
 
 # Statistics
 
-def get_statistics_for_scatter_plot(batches: list, fields: list)-> dict:
+def get_statistics_for_scatter_plot(batches: list, fields: list) -> dict:
     """Formating data for scatter plot"""
 
     scatter_plot_data = {}
@@ -371,24 +375,20 @@ def get_statistics_for_box_plot(adapter, batches: list, fields: list):
 
     match = {'$match': {'SampleProject': {'$in': batches}}}
     lookup = {'$lookup': {
-                'from': 'batch', 
-                'localField': 'SampleProject', 
-                'foreignField': '_id', 
-                'as': 'batch'}} 
+        'from': 'batch',
+        'localField': 'SampleProject',
+        'foreignField': '_id',
+        'as': 'batch'}}
     unwind = {'$unwind': {'path': '$batch'}}
     group = {'$group': {'_id': {
-                            'batch': '$SampleProject', 
-                            'date': '$batch.SequencingDate'}}}
+        'batch': '$SampleProject',
+        'date': '$batch.SequencingDate'}}}
 
     for field in fields:
         group['$group'][field] = {'$push': f"${field}"}
 
     pipe = [match, lookup, unwind, group]
-            #maybe add a fina sort to the pipe
+    # maybe add a fina sort to the pipe
     box_plot_data = list(adapter.sample_aggregate(pipe))
-    
+
     return box_plot_data
-
-
-   
-

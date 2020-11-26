@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from flask import url_for, redirect, request, Blueprint, session, current_app, flash
+from flask import url_for, redirect, Blueprint, session, current_app, flash
 from flask_login import LoginManager
 from authlib.integrations.flask_client import OAuth
 

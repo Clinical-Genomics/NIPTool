@@ -1,10 +1,10 @@
 import logging
-import pandas as pd
+import pandas
 from pathlib import Path
 
 from typing import Optional, List
 
-from NIPTool.exeptions import MissingResultsError, FileValidationError
+from NIPTool.exeptions import MissingResultsError
 from NIPTool.models.validation import (
     ints,
     floats,
@@ -15,8 +15,9 @@ from NIPTool.models.validation import (
 LOG = logging.getLogger(__name__)
 
 
+
 def form(val: Optional, function) -> Optional:
-    """Returning formated value or None"""
+    """Returning formatted value or None"""
 
     try:
         return function(val)
@@ -25,23 +26,23 @@ def form(val: Optional, function) -> Optional:
 
 
 def validate(key: str, val: Optional) -> Optional:
-    """Formating value according to defined models."""
+    """Formatting value according to defined models."""
 
     if val in exceptions:
-        formated_value = None
+        formatted_value = None
     elif key in ints:
-        formated_value = form(val, int)
+        formatted_value = form(val, int)
     elif key in floats:
-        formated_value = form(val, float)
+        formatted_value = form(val, float)
     elif key in strings:
-        formated_value = form(val, str)
+        formatted_value = form(val, str)
     else:
-        formated_value = None
-    return formated_value
+        formatted_value = None
+    return formatted_value
 
 
 def parse_batch_file(nipt_results_path: str) -> List[dict]:
-    """Parsing file content. Formating values. Ignoring values 
+    """Parsing file content. Formatting values. Ignoring values
     that could not be formatted according to defined models"""
 
     file = Path(nipt_results_path)
@@ -49,19 +50,18 @@ def parse_batch_file(nipt_results_path: str) -> List[dict]:
     if not file.exists():
         raise MissingResultsError("Results file missing.")
 
-    with open(file) as nipt_results_path:
-        df = pd.read_csv(file, na_filter=False)
-        results = df.to_dict(orient="records")
+    data_frame = pandas.read_csv(file, na_filter=False)
+    results = data_frame.to_dict(orient="records")
 
     samples = []
     for sample in results:
-        formated_results = {}
+        formatted_results = {}
         for key, val in sample.items():
-            formated_value = validate(key, val)
-            if formated_value is None:
+            formatted_value = validate(key, val)
+            if formatted_value is None:
                 LOG.info(f"invalid format of {key}.")
                 continue
-            formated_results[key] = formated_value
-        samples.append(formated_results)
+            formatted_results[key] = formatted_value
+        samples.append(formatted_results)
 
     return samples

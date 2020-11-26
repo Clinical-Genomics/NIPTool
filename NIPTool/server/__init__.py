@@ -1,15 +1,13 @@
-import os
 import logging
 
 from flask import Flask
 from pymongo import MongoClient
 import yaml
-from uuid import uuid4
-
 
 from NIPTool.adapter.plugin import NiptAdapter
 from NIPTool.server.login import login_bp, login_manager
 from NIPTool.server.views import server_bp
+from NIPTool.server.load import load_bp
 
 logging.basicConfig(level=logging.INFO)
 LOG = logging.getLogger(__name__)
@@ -31,7 +29,6 @@ def create_app(test=False):
 
 
 def configure_app(app, config=None):
-
     if config:
         app.config = {**app.config, **yaml.safe_load(config)}
     app.config['SECRET_KEY'] = app.config['SECRET_KEY']
@@ -39,14 +36,14 @@ def configure_app(app, config=None):
     db_name = app.config['DB_NAME']
     app.client = client
     app.db = client[db_name]
-    app.adapter = NiptAdapter(client, db_name = db_name)
+    app.adapter = NiptAdapter(client, db_name=db_name)
     app.register_blueprint(login_bp)
     app.register_blueprint(server_bp)
+    app.register_blueprint(load_bp)
     login_manager.init_app(app)
 
-    if app.config['DEBUG']==1:
+    if app.config['DEBUG'] == 1:
         from flask_debugtoolbar import DebugToolbarExtension
         toolbar = DebugToolbarExtension(app)
 
     return app
-

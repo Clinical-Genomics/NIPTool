@@ -11,12 +11,17 @@ from flask import (
     session)
 from pathlib import Path
 
-
 from flask_login import login_required
 from datetime import datetime
 from NIPTool.server.utils import *
 from NIPTool.server.constants import *
 import pdfkit
+
+
+
+import logging
+
+LOG = logging.getLogger(__name__)
 
 
 app = current_app
@@ -40,6 +45,7 @@ def batches():
     return render_template("batches.html", batches=all_batches)
 
 
+
 ### Batch tabs
 
 @server_bp.route("/batches/<batch_id>/")
@@ -55,48 +61,20 @@ def batch(batch_id):
     )
 
 
-@server_bp.route("/batches/<batch_id>/NCV13")
+@server_bp.route("/batches/<batch_id>/<ncv>")
 @login_required
-def NCV13(batch_id):
-    """Batch view with with NCV-13 plot"""
+def NCV(batch_id, ncv):
+    """Batch view with with NCV plot"""
+
     return render_template(
         "batch/tabs/NCV.html",
+        tris_thresholds=TRISOMI_TRESHOLDS,
         batch=app.adapter.batch(batch_id),
-        chr="13",
-        ncv_chrom_data={"13": get_tris_cases(app.adapter, "13", batch_id)},
-        normal_data=get_tris_control_normal(app.adapter, "13"),
-        abnormal_data=get_tris_control_abnormal(app.adapter, "13", 0),
-        page_id="batches_NCV13",
-    )
-
-
-@server_bp.route("/batches/<batch_id>/NCV18")
-@login_required
-def NCV18(batch_id):
-    """Batch view with with NCV-18 plot"""
-    return render_template(
-        "batch/tabs/NCV.html",
-        batch=app.adapter.batch(batch_id),
-        chr="18",
-        ncv_chrom_data={"18": get_tris_cases(app.adapter, "18", batch_id)},
-        normal_data=get_tris_control_normal(app.adapter, "18"),
-        abnormal_data=get_tris_control_abnormal(app.adapter, "18", 0),
-        page_id="batches_NCV18",
-    )
-
-
-@server_bp.route("/batches/<batch_id>/NCV21")
-@login_required
-def NCV21(batch_id):
-    """Batch view with NCV-21 plot"""
-    return render_template(
-        "batch/tabs/NCV.html",
-        batch=app.adapter.batch(batch_id),
-        chr="21",
-        ncv_chrom_data={"21": get_tris_cases(app.adapter, "21", batch_id)},
-        normal_data=get_tris_control_normal(app.adapter, "21"),
-        abnormal_data=get_tris_control_abnormal(app.adapter, "21", 0),
-        page_id="batches_NCV21",
+        chr=ncv,
+        ncv_chrom_data={ncv: get_tris_cases(app.adapter, ncv, batch_id)},
+        normal_data=get_tris_control_normal(app.adapter, ncv),
+        abnormal_data=get_tris_control_abnormal(app.adapter, ncv, 0),
+        page_id=f"batches_NCV{ncv}",
     )
 
 
@@ -184,7 +162,7 @@ def report(batch_id, coverage):
         # table
         sample_info=[get_sample_info(sample) for sample in samples],
         # coverage
-        coverage = coverage,
+        coverage=coverage,
         x_axis=list(range(1, 23)),
         scatter_data=scatter_data,
         box_data=box_data,
@@ -238,7 +216,9 @@ def sample_tris(sample_id):
         page_id="sample_tris",
     )
 
+
 import tempfile
+
 
 @server_bp.route("/download/<batch_id>/<file_id>")
 @login_required
@@ -253,9 +233,7 @@ def download(batch_id, file_id):
     return send_from_directory(str(file.parent), file.name, as_attachment=True)
 
 
-
 # Statistics
-
 
 @server_bp.route("/statistics")
 @login_required
@@ -301,6 +279,7 @@ def statistics():
 @login_required
 def update():
     """Update the database"""
+
     time_stamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
     user = app.user
     if user.role != "RW":
@@ -352,3 +331,4 @@ def update():
                 )
 
     return redirect(request.referrer)
+

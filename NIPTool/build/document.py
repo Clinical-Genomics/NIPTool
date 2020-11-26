@@ -23,9 +23,16 @@ def build_sample(sample_data: dict) -> dict:
     return sample
 
 
-def build_batch(batch_data: dict) -> dict:
+def build_batch(batch_data: dict, request_data: dict) -> dict:
     """Builds a document for the batch collection"""
 
     batch = build_document(batch_data, BATCH_KEYS)
+    batch["_id"] = request_data['project_name']
+    batch["fluffy_result_file"] = request_data['result_file']
+
+    if request_data.get('multiqc_report'):
+        batch["multiqc_report"] = request_data['multiqc_report']
+    if request_data.get('segmental_calls'):
+        batch["segmental_calls"] = request_data['segmental_calls']
 
     return batch

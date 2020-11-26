@@ -13,3 +13,5 @@ requests
 flask_ldap3_login
 pandas
 pandas-schema
+cerberus
+

@@ -1,5 +1,5 @@
 from NIPTool.build.document import build_batch, build_sample
-from NIPTool.models.constants import BATCH_KEYS,  SAMPLE_KEYS
+from NIPTool.models.constants import BATCH_KEYS, SAMPLE_KEYS
 import pytest
 
 
@@ -23,9 +23,11 @@ def test_build_batch(batch_key, value):
     # GIVEN a batch_data dict a batch_key with some value and a non batch_key
 
     batch_data = {batch_key: value, "other_key": 8983}
-
+    project_name = "project_name"
+    file_path = "path"
+    request_data = {"result_file": file_path, "project_name": project_name}
     # WHEN building a mongo batch
-    mongo_batch = build_batch(batch_data=batch_data)
+    mongo_batch = build_batch(batch_data=batch_data, request_data=request_data)
 
     # THEN the non batch_key will be removed
-    assert mongo_batch == {batch_key: value}
+    assert mongo_batch == {'_id': project_name, 'fluffy_result_file': file_path, batch_key: value}

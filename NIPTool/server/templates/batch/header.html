@@ -79,13 +79,13 @@
                 href="{{ url_for('server.batch', batch_id = batch._id) }}">NCV Table</a>
         </li>
         <li {% if page_id =='batches_NCV13' %} class="active" {% endif %}><a
-                href="{{ url_for('server.NCV13', batch_id = batch._id) }}">NCV13</a>
+                href="{{ url_for('server.NCV', batch_id = batch._id, ncv = '13') }}">NCV13</a>
         </li>
         <li {% if page_id =='batches_NCV18' %} class="active" {% endif %}><a
-                href="{{ url_for('server.NCV18', batch_id = batch._id) }}">NCV18</a>
+                href="{{ url_for('server.NCV', batch_id = batch._id, ncv = '18') }}">NCV18</a>
         </li>
         <li {% if page_id =='batches_NCV21' %} class="active" {% endif %}><a
-                href="{{ url_for('server.NCV21', batch_id = batch._id) }}">NCV21</a>
+                href="{{ url_for('server.NCV', batch_id = batch._id, ncv = '21') }}">NCV21</a>
         </li>
         <li {% if page_id =='batches_FF' %} class="active" {% endif %}><a
                 href="{{ url_for('server.fetal_fraction', batch_id = batch._id) }}">FF</a>

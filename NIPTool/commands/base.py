@@ -2,7 +2,6 @@
 import logging
 
 import click
-import coloredlogs
 
 from flask.cli import FlaskGroup, with_appcontext
 from flask import current_app
@@ -12,8 +11,6 @@ from NIPTool.server import create_app, configure_app
 
 # Get version and doc decorator
 from NIPTool import __version__
-from NIPTool.tools.cli_utils import add_doc as doc
-from .load import load
 
 LOG_LEVELS = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 LOG = logging.getLogger(__name__)
@@ -53,4 +50,3 @@ def name():
 
 cli.add_command(test)
 cli.add_command(name)
-cli.add_command(load)

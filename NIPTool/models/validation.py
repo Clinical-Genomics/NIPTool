@@ -89,6 +89,15 @@ floats = [
     "GC_Dropout",
     "AT_Dropout",
     "Bin2BinVariance",
-    
-]
 
+]
+req_str = {'type': 'string', 'required': True}
+nreq_str = {'type': 'string', 'required': False}
+
+batch_load_schema = {'concentrations': nreq_str,
+                     'project_name': req_str,
+                     'result_file': req_str,
+                     'multiqc_report': nreq_str,
+                     'segmental_calls': nreq_str}
+
+user_load_schema = {'email': req_str, 'name': req_str, 'role': req_str}

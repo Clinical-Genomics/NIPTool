@@ -1,6 +1,0 @@
-{
-  "concentrations":
-    { "s1": 12, "s2": 12, "s3": 12 },
-  "result_file": "tests/fixtures/valid_fluffy.csv",
-  "project_name": "testprojet"
-}

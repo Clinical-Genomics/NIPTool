@@ -1,84 +1,107 @@
 {% block scripts %}
-<script>
-    {% for chrom, cases  in ncv_chrom_data.items() %}
-    $(function chrom_plot() {
-    var data = []
-    var layout = {
-        legend:{hovermode:'closest' },
-        hovermode:'closest',
-        annotations : [],
-        xaxis :{showline: true,
-                ticktext : {{cases['names']|tojson}},
-                tickvals : {{cases['x_axis']}},
-                tickangle : 20,
-                linecolor: '#636363',
-                linewidth: 5,
-                showgrid: true,
-                gridcolor: '#bdbdbd'
-                },
-            
-        yaxis :{range: [-10,],
-                zeroline: false,
-                showline: true,
-                showgrid: false,
-                linecolor: '#636363',
-                linewidth: 5,
-                title : 'NCV{{chrom}}'
-                }};
+    <script>
+        {% for chrom, cases  in ncv_chrom_data.items() %}
+            $(function chrom_plot() {
+                var data = []
+                var layout = {
+                    legend: {hovermode: 'closest'},
+                    hovermode: 'closest',
+                    annotations: [],
+                    xaxis: {
+                        showline: true,
+                        ticktext: {{cases['names']|tojson}},
+                        tickvals: {{cases['x_axis']}},
+                        tickangle: 20,
+                        linecolor: '#636363',
+                        linewidth: 5,
+                        showgrid: true,
+                        gridcolor: '#bdbdbd'
+                    },
 
-    var cases = {name: "Current batch (N ="+ "{{cases['count']}}" +")" ,
-                 y: {{cases['values']}},
-                x: {{cases['x_axis']}},
-                text: {{cases['names']|tojson}},
-                mode: 'markers',
-                type: 'scatter',
+                    yaxis: {
+                        range: [-10,],
+                        zeroline: false,
+                        showline: true,
+                        showgrid: false,
+                        linecolor: '#636363',
+                        linewidth: 5,
+                        title: 'NCV{{chrom}}'
+                    }
                 };
-    data.push(cases)
 
-    var box = {
-        y: {{ normal_data['values'] }},
-        pointpos: 30,
-        type: 'box',
-        marker: {
-            color: '#ccccb3'},
-            name: 'Negative (N='+{{normal_data['count']}}+')',
-            hoverinfo:'none'}
-    data.push(box)
+                var cases = {
+                    name: "Current batch (N =" + "{{cases['count']}}" + ")",
+                    y: {{cases['values']}},
+                    x: {{cases['x_axis']}},
+                    text: {{cases['names']|tojson}},
+                    mode: 'markers',
+                    type: 'scatter',
+                };
+                data.push(cases)
 
-    
-
-    {% for status  in abnormal_data.keys() %}
-        var verif = {                                                                  
-            name: "{{status}} T{{chrom}} (N="+{{abnormal_data[status]['count']}}+")",
-            y: {{abnormal_data[status]['values']}},                                        
-            x: {{abnormal_data[status]['x_axis']}} ,
-            text: {{abnormal_data[status]['names']|tojson}},                                       
-            mode: 'markers',                                             
-            type: 'scatter'}; 
-        data.push(verif);
-    {% endfor %}
-
-    
-    Plotly.newPlot('NCV{{chrom}}_plot', data, layout);
-    });
-    {% endfor %}
-</script>
+                var box = {
+                    y: {{ normal_data['values'] }},
+                    pointpos: 30,
+                    type: 'box',
+                    marker: {
+                        color: '#ccccb3'
+                    },
+                    name: 'Negative (N='+{{normal_data['count']}}+')',
+                    hoverinfo: 'none'
+                }
+                data.push(box)
 
 
-<script>
-$(document).ready(function() {
-    var table = $('#batch_table').DataTable( {
-        lengthChange: false,
-        paging:     false,
-        info: false,
-        searching:  false
-    } );
-} );
-</script>
+                {% for line  in tris_thresholds %}
+                    var line = {
+                        x: [{{cases['x_axis'][0]}}, {{cases['x_axis'][-1]}}],
+                        y: [{{tris_thresholds[line]['NCV']}}, {{tris_thresholds[line]['NCV']}}],
+                        mode: 'lines',
+                        text: "{{tris_thresholds[line]['text']}}",
+                        showlegend: false,
+                        line: {
+                            dash: "dot",
+                            color: "{{tris_thresholds[line]["color"]}}",
+                            width: 1
+                        },
+                        name: "{{line}}"
+                    };
+                    data.push(line);
+                {% endfor %}
+
+                {% for status  in abnormal_data.keys() %}
+                    var verif = {
+                        name: "{{status}} T{{chrom}} (N="+{{abnormal_data[status]['count']}}+")",
+                        y: {{abnormal_data[status]['values']}},
+                        x: {{abnormal_data[status]['x_axis']}},
+                        text: {{abnormal_data[status]['names']|tojson}},
+                        mode: 'markers',
+                        type: 'scatter'
+                    };
+                    data.push(verif);
+                {% endfor %}
 
 
-<script>
-var d = new Date();
-document.getElementById("demo").innerHTML = d.toDateString();
-</script>
+                Plotly.newPlot('NCV{{chrom}}_plot', data, layout);
+            });
+        {% endfor %}
+    </script>
+
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#batch_table').DataTable({
+                lengthChange: false,
+                paging: false,
+                info: false,
+                searching: false
+            });
+        });
+    </script>
+
+
+    <script>
+        var d = new Date();
+        document.getElementById("demo").innerHTML = d.toDateString();
+    </script>
 {% endblock %}
