@@ -1,3 +1,5 @@
+from typing import Optional
+
 from NIPTool.server.constants import *
 
 
@@ -56,7 +58,7 @@ def _get_ff_warning(fetal_fraction):
         return "default"
 
 
-def get_sample_warnings(sample):
+def get_sample_warnings(sample): #arg pymongo object.. return dict of WarningColorModel
     """"""
 
     sample_warnings = {}
@@ -69,7 +71,7 @@ def get_sample_warnings(sample):
     return sample_warnings
 
 
-def _get_tris_warning(z_score: float, fetal_fraction):
+def _get_tris_warning(z_score: float, fetal_fraction: Optional[float])-> str:
     """Get automated trisomi warning, based on preset Zscore thresholds"""
 
     if fetal_fraction is None or z_score is None:
@@ -109,6 +111,7 @@ def get_scatter_data_for_coverage_plot(samples):
                 continue
             data[sample_id]["y"].append(ratio)
             data[sample_id]["x"].append(chr)
+    print(data)
     return data
 
 
