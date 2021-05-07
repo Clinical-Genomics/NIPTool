@@ -1,9 +1,12 @@
 from datetime import datetime, timedelta
+from functools import wraps
 from typing import Optional
 
 from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from jose import JWTError, jwt
+from starlette.responses import RedirectResponse
+
 from NIPTool.config import get_nipt_adapter
 from NIPTool.crud import find
 from NIPTool.adapter.plugin import NiptAdapter
@@ -38,6 +41,34 @@ def get_current_user(
     if not user:
         raise CredentialsError(message="User not found in database.")
     return user
+
+
+def return_500_if_errors(f):
+    print("haha")
+
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        print("hehe")
+        try:
+            return f(*args, **kwargs)
+        except:
+            response = {"status_code": 500, "status": "Internal Server Error"}
+            return RedirectResponse("../")
+
+    return wrapper
+
+
+def redirect_unauthorized(func):
+    print("hoho")
+
+    def inner_function(*args, **kwargs):
+        print("hihi")
+        try:
+            func(*args, **kwargs)
+        except:
+            return RedirectResponse("../")
+
+    return inner_function
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:

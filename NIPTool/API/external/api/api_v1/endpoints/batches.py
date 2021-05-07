@@ -1,6 +1,10 @@
 from fastapi import APIRouter, Depends, Request
 
-from NIPTool.API.external.api.deps import get_current_user
+from NIPTool.API.external.api.deps import (
+    get_current_user,
+    redirect_unauthorized,
+    return_500_if_errors,
+)
 from NIPTool.adapter.plugin import NiptAdapter
 from NIPTool.API.external.utils import *
 from NIPTool.config import get_nipt_adapter, templates
@@ -11,6 +15,7 @@ router = APIRouter()
 
 
 @router.post("/")
+@return_500_if_errors
 def batches(
     request: Request,
     adapter: NiptAdapter = Depends(get_nipt_adapter),
@@ -31,6 +36,7 @@ def batches(
 
 
 @router.get("/")
+@return_500_if_errors
 def batches(
     request: Request,
     adapter: NiptAdapter = Depends(get_nipt_adapter),
